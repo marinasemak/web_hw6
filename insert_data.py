@@ -1,5 +1,4 @@
 import logging
-import random
 
 from faker import Faker
 
@@ -13,7 +12,7 @@ fake = Faker()
 STUDENTS_COUNT = 50
 GROUPS_COUNT = 3
 LECTURER_COUNT = 5
-SUBJECTS_COUNT = 8
+SUBJECTS_COUNT = 5
 fake_data = Faker()
 
 
@@ -64,25 +63,10 @@ def prepare_data(groups, students, lecturers, subjects) -> tuple():
 
     return for_groups, for_students, for_lecturers, for_subjects, for_grades
 
-
-def insert_data(conn, groups, students, lecturers, subjects, grades):
+def insert_data(conn, data, sql_expression):
     cur = conn.cursor()
     try:
-        sql_to_groups = "INSERT INTO groups(name) VALUES(%s)"
-        cur.executemany(sql_to_groups, groups)
-
-        sql_to_students = "INSERT INTO students(name, group_id) VALUES(%s, %s)"
-        cur.executemany(sql_to_students, students)
-
-        sql_to_lecturers = "INSERT INTO lecturers(name) VALUES(%s)"
-        cur.executemany(sql_to_lecturers, lecturers)
-
-        sql_to_subjects = "INSERT INTO subjects(name, lecturer_id) VALUES(%s, %s)"
-        cur.executemany(sql_to_subjects, subjects)
-
-        sql_to_grades = "INSERT INTO students_grades(grade_value, student_id, subject_id, date) VALUES(%s, %s, %s, %s)"
-        cur.executemany(sql_to_grades, grades)
-
+        cur.executemany(sql_expression, data)
         conn.commit()
     except DatabaseError as err:
         logging.error(err)
@@ -91,15 +75,23 @@ def insert_data(conn, groups, students, lecturers, subjects, grades):
         cur.close()
 
 
+
 if __name__ == '__main__':
     groups, students, lecturers, subjects, grades = prepare_data(*generate_fake_data(STUDENTS_COUNT, LECTURER_COUNT))
+    sql_to_groups = "INSERT INTO groups(name) VALUES(%s)"
+    sql_to_students = "INSERT INTO students(name, group_id) VALUES(%s, %s)"
+    sql_to_lecturers = "INSERT INTO lecturers(name) VALUES(%s)"
+    sql_to_subjects = "INSERT INTO subjects(name, lecturer_id) VALUES(%s, %s)"
+    sql_to_grades = "INSERT INTO students_grades(grade_value, student_id, subject_id, date) VALUES(%s, %s, %s, %s)"
     try:
         with create_connection() as conn:
             if conn is not None:
-                insert_data(conn, groups, students, lecturers, subjects, grades)
+                # insert_data(conn, groups, sql_to_groups)
+                # insert_data(conn, students, sql_to_students)
+                # insert_data(conn, lecturers, sql_to_lecturers)
+                # insert_data(conn, subjects, sql_to_subjects)
+                insert_data(conn, grades, sql_to_grades)
             else:
                 print('Error: can\'t create the database connection')
     except RuntimeError as err:
         logging.error(err)
-    # print(f"{groups}\n {students}\n {lecturers}\n {subjects}\n {grades}")
-    # print(f"{groups}")

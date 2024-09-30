@@ -55,11 +55,11 @@ if __name__ == '__main__':
     try:
         with create_connection() as conn:
             if conn is not None:
-                # create_table(conn, sql_create_students)
                 # create_table(conn, sql_create_group)
+                # create_table(conn, sql_create_students)
                 # create_table(conn, sql_create_lecturer)
                 # create_table(conn, sql_create_subjects)
-                create_table(conn, sql_create_students_grades)
+                # create_table(conn, sql_create_students_grades)
                 logging.info("the table is created")
             else:
                 logging.error('Error: can\'t create the database connection')
