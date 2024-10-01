@@ -3,4 +3,4 @@ from lecturers l
 join subjects sb on l.id = sb.lecturer_id
 join students_grades sg on sb.id = sg.subject_id 
 where l.name = 'Christopher Benson'
-group by l."name", sb."name" ;
+group by l.name, sb.name ;
